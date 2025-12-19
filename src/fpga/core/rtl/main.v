@@ -59,6 +59,7 @@ module main #(
     output GSU_ACTIVE,
     input  GSU_TURBO,
     input  GSU_FASTROM,
+	input [7:0] CC_DIP,
 
     input        BLEND,
     input        PAL,
@@ -336,7 +337,7 @@ module main #(
           .map_ctrl  (ROM_TYPE),
           .rom_mask  (ROM_MASK),
           .bsram_mask(RAM_MASK),
-
+          .cc_dip(CC_DIP),
           .ext_rtc(EXT_RTC)
       );
     end else begin

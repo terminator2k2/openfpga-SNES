@@ -23,8 +23,8 @@
 	  {
         "name": "Bios",
         "id": 1,
-        "required": true,
-        "filename": "bios.rom",
+        "required": false,
+        "filename": "bsx-bios.rom",
         "extensions": ["rom"],
         "address": "0x10000000"
       }

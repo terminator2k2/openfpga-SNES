@@ -168,9 +168,70 @@ choose_ramsz:
   log_string("Finished RAMSZ")
   ret
 
+check_cc92_pf94:
+  // ---- CC92 (Campus Challenge '92) ----
+  check_value_equality(header_start_mem + 0, 0x00)
+  jp nz, check_pf94_10k
+  check_value_equality(header_start_mem + 1, 0x08)
+  jp nz, check_pf94_10k
+  check_value_equality(header_start_mem + 2, 0x22)
+  jp nz, check_pf94_10k
+
+  log_string("Detected CC92 (DSP1A)")
+
+  ld r12,#0xE4   // type E
+  ld r11,#3      // RAMSZ
+  add r13,#20
+  ret
+
+check_pf94_10k:
+  // ---- PF94 10KB header ----
+  check_value_equality(header_start_mem + 0, 0xC9)
+  jp nz, check_pf94_1m
+  check_value_equality(header_start_mem + 1, 0x80)
+  jp nz, check_pf94_1m
+  check_value_equality(header_start_mem + 2, 0x80)
+  jp nz, check_pf94_1m
+  check_value_equality(header_start_mem + 3, 0x44)
+  jp nz, check_pf94_1m
+
+  log_string("Detected PF94 10KB (DSP1A)")
+
+  ld r12,#0xF4   // type F
+  ld r11,#3      // RAMSZ
+  add r13,#20
+  ret
+
+check_pf94_1m:
+  // ---- PF94 1MB ("PREHISTORIK MAN") ----
+  check_value_equality(header_start_mem + 0, 0x50) // P
+  jp nz, end_special
+  check_value_equality(header_start_mem + 1, 0x52) // R
+  jp nz, end_special
+  check_value_equality(header_start_mem + 2, 0x45) // E
+  jp nz, end_special
+  check_value_equality(header_start_mem + 3, 0x48) // H
+  jp nz, end_special
+
+  log_string("Detected PF94 1MB (DSP1A)")
+
+  ld r12,#0xF4   // type F
+  ld r11,#3
+  add r13,#20
+  ret
+
+end_special:
+  ret
+  
+  
 choose_chip_type:
   log_string("Checking chip type")
-  ld r12,#0 // chip_type is stored in r12
+  ld r12,#0
+
+  call check_cc92_pf94
+  // If matched, r12 is already set
+  cmp r12,#0
+  jp nz, finished_chip
 
   // if (mapping_mode == 'h20 && rom_type == 'h03) begin
   log_string("Checking DSP1")
