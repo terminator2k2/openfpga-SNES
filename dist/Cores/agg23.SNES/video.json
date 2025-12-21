@@ -7,6 +7,8 @@
         "height": 224,
         "aspect_w": 64,
         "aspect_h": 49,
+        "dock_aspect_w": 64,
+        "dock_aspect_h": 49,
         "rotation": 0,
         "mirror": 0
       },
@@ -15,6 +17,8 @@
         "height": 224,
         "aspect_w": 8,
         "aspect_h": 7,
+        "dock_aspect_w": 64,
+        "dock_aspect_h": 49,
         "rotation": 0,
         "mirror": 0
       },
