@@ -376,6 +376,9 @@ module core_top (
         32'h0000010C: begin
           joystick_deadzone <= bridge_wr_data[7:0];
         end
+        32'h110: begin
+          controller_swap <= bridge_wr_data[0];
+        end
         32'h200: begin
           use_square_pixels <= bridge_wr_data[0];
         end
@@ -694,6 +697,7 @@ module core_top (
   reg [7:0] dpad_aim_speed = 0;
   reg [7:0] joystick_deadzone;
   reg mouse_enabled;
+  reg controller_swap = 0;
 
   reg use_square_pixels = 0;
   reg blend_enabled = 0;
@@ -712,12 +716,13 @@ module core_top (
   wire [7:0] dpad_aim_speed_s;
   wire [7:0] joystick_deadzone_s;
   wire mouse_enabled_s;
+  wire controller_swap_s;
 
   wire use_square_pixels_s;
   wire blend_enabled_s;
 
   synch_3 #(
-      .WIDTH(31)
+      .WIDTH(32)
   ) settings_s (
       {
         reset_button,
@@ -731,6 +736,7 @@ module core_top (
         dpad_aim_speed,
         joystick_deadzone,
         mouse_enabled,
+        controller_swap,
         use_square_pixels,
         blend_enabled
       },
@@ -746,6 +752,7 @@ module core_top (
         dpad_aim_speed_s,
         joystick_deadzone_s,
         mouse_enabled_s,
+        controller_swap_s,
         use_square_pixels_s,
         blend_enabled_s
       },
@@ -774,6 +781,10 @@ module core_top (
     rtc_time[7:0]  // Second
   };
 
+  // Active Player: swap the gamepad between SNES ports 1 and 2, so a single Pocket can be passed for 2P alternating play
+  wire [15:0] snes_p1_key = controller_swap_s ? cont2_key_s : cont1_key_s;
+  wire [15:0] snes_p2_key = controller_swap_s ? cont1_key_s : cont2_key_s;
+
   MAIN_SNES snes (
       .clk_mem_85_9 (clk_mem_85_9),
       .clk_sys_21_48(clk_sys_21_48),
@@ -796,34 +807,34 @@ module core_top (
       .blend_enabled(blend_enabled_s),
 
       // Input
-      .p1_button_a(cont1_key_s[4]),
-      .p1_button_b(cont1_key_s[5]),
-      .p1_button_x(cont1_key_s[6]),
-      .p1_button_y(cont1_key_s[7]),
-      .p1_button_trig_l(cont1_key_s[8]),
-      .p1_button_trig_r(cont1_key_s[9]),
-      .p1_button_start(cont1_key_s[15]),
-      .p1_button_select(cont1_key_s[14]),
-      .p1_dpad_up(cont1_key_s[0]),
-      .p1_dpad_down(cont1_key_s[1]),
-      .p1_dpad_left(cont1_key_s[2]),
-      .p1_dpad_right(cont1_key_s[3]),
+      .p1_button_a(snes_p1_key[4]),
+      .p1_button_b(snes_p1_key[5]),
+      .p1_button_x(snes_p1_key[6]),
+      .p1_button_y(snes_p1_key[7]),
+      .p1_button_trig_l(snes_p1_key[8]),
+      .p1_button_trig_r(snes_p1_key[9]),
+      .p1_button_start(snes_p1_key[15]),
+      .p1_button_select(snes_p1_key[14]),
+      .p1_dpad_up(snes_p1_key[0]),
+      .p1_dpad_down(snes_p1_key[1]),
+      .p1_dpad_left(snes_p1_key[2]),
+      .p1_dpad_right(snes_p1_key[3]),
 
       .p1_lstick_x(cont1_joy_x_calibrated),
       .p1_lstick_y(cont1_joy_y_calibrated),
 
-      .p2_button_a(cont2_key_s[4]),
-      .p2_button_b(cont2_key_s[5]),
-      .p2_button_x(cont2_key_s[6]),
-      .p2_button_y(cont2_key_s[7]),
-      .p2_button_trig_l(cont2_key_s[8]),
-      .p2_button_trig_r(cont2_key_s[9]),
-      .p2_button_start(cont2_key_s[15]),
-      .p2_button_select(cont2_key_s[14]),
-      .p2_dpad_up(cont2_key_s[0]),
-      .p2_dpad_down(cont2_key_s[1]),
-      .p2_dpad_left(cont2_key_s[2]),
-      .p2_dpad_right(cont2_key_s[3]),
+      .p2_button_a(snes_p2_key[4]),
+      .p2_button_b(snes_p2_key[5]),
+      .p2_button_x(snes_p2_key[6]),
+      .p2_button_y(snes_p2_key[7]),
+      .p2_button_trig_l(snes_p2_key[8]),
+      .p2_button_trig_r(snes_p2_key[9]),
+      .p2_button_start(snes_p2_key[15]),
+      .p2_button_select(snes_p2_key[14]),
+      .p2_dpad_up(snes_p2_key[0]),
+      .p2_dpad_down(snes_p2_key[1]),
+      .p2_dpad_left(snes_p2_key[2]),
+      .p2_dpad_right(snes_p2_key[3]),
 
       .p3_button_a(cont3_key_s[4]),
       .p3_button_b(cont3_key_s[5]),

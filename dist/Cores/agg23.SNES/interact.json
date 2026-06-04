@@ -11,6 +11,17 @@
         "value": 1
       },
       {
+        "name": "Swap P1 & P2",
+        "id": 31,
+        "type": "check",
+        "enabled": true,
+        "address": "0x110",
+        "persist": true,
+        "writeonly": true,
+        "defaultval": 0,
+        "value": 1
+      },
+      {
         "name": "CPU Turbo",
         "id": 15,
         "type": "check",
