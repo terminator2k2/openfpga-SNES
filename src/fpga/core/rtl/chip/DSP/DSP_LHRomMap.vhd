@@ -329,19 +329,19 @@ begin
 			CC_TM_DIV <= CC_TM_DIV + 1;
 			if CC_TM_DIV = 21477270*60-1 then
 				CC_TM_DIV <= 0;
-				if CC_TM_CNT = 0 then
-					CC_SR(1) <= CC_TM_ON;
-					CC_TM_ON <= '0';
-				else
-					CC_TM_CNT <= CC_TM_CNT - 1;
-				end if;
+				if CC_TM_CNT = to_unsigned(1, CC_TM_CNT'length) then
+                     CC_TM_CNT <= (others => '0');
+                     CC_SR(1) <= CC_TM_ON;
+                     CC_TM_ON <= '0';
+                else
+                     CC_TM_CNT <= CC_TM_CNT - 1;
+                end if;
 			end if;
-			
 			if CC_SEL = '1' and CA(21) = '1' and CPUWR_N = '0' and SYSCLKF_CE = '1' then
 				CC_DR <= DI;
 				if DI = x"09" then
 					CC_TM_ON <= '1';
-					CC_TM_CNT <= "0"&unsigned(CC_DIP(3 downto 0)) + 3;
+					CC_TM_CNT <= "0"&unsigned(CC_DIP(3 downto 0));
 					CC_TM_DIV <= 0;
 				end if;
 			end if;

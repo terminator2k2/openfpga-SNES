@@ -150,7 +150,7 @@
         "graphical": {
         "signed": false,
         "min": 3,
-        "max": 18,
+        "max": 15,
         "adjust_small": 1,
         "adjust_large": 5
         }
